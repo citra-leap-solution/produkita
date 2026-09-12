@@ -1,7 +1,7 @@
 "use client"
 
-import { useState } from "react"
-import { useAuthStore } from "@/stores/useAuthStore"
+import { useEffect, useState } from "react"
+import { useAuthStore, type UserRole } from "@/stores/useAuthStore"
 
 type ApiResult<T> = { ok: true; data: T } | { ok: false; error: string }
 
@@ -21,14 +21,20 @@ async function apiCall<T>(path: string, method: string, body?: unknown): Promise
 export const useAuth = () => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [sessionReady, setSessionReady] = useState(false)
 
-  const { setSession, clearSession } = useAuthStore()
+  const { uuid, email, role, name, setSession, clearSession } = useAuthStore()
+
+  useEffect(() => {
+    setSessionReady(useAuthStore.persist.hasHydrated())
+    return useAuthStore.persist.onFinishHydration(() => setSessionReady(true))
+  }, [])
 
   const handleLogin = async (email: string, password: string, rememberMe: boolean = false) => {
     setLoading(true)
     setError(null)
     try {
-      const result = await apiCall<{ uuid: string; email: string; role: string; name: string | null }>(
+      const result = await apiCall<{ uuid: string; email: string; role: UserRole; name: string | null }>(
         "/api/auth/login",
         "POST",
         { email, password, rememberMe }
@@ -179,6 +185,13 @@ export const useAuth = () => {
   }
 
   return {
+    uuid,
+    email,
+    role,
+    name,
+    sessionReady,
+    isAdmin: role === "admin" || role === "superadmin",
+    isUser: role === "user",
     loading,
     error,
     login: handleLogin,

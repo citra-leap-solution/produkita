@@ -5,12 +5,12 @@ import { getAuthCookie, verifyToken } from "@/lib/auth/token"
 import { dashboardFinanceApi } from "@/lib/finance/api"
 import { getTenantApi } from "@/lib/tenant/api"
 
-import StatsCards from "@/components/pages/dashboard/financials/partials/stats-cards"
-import AlertBanner from "@/components/pages/dashboard/financials/partials/alert-banner"
-import ReportCalendar from "@/components/pages/dashboard/financials/partials/report-calendar"
-import RevenueChart from "@/components/pages/dashboard/financials/partials/revenue-chart"
-import RecentTransactions from "@/components/pages/dashboard/financials/partials/recent-transactions"
-import { StatItem } from "@/components/pages/dashboard/financials/partials/stats-cards"
+import StatsCards from "@/components/pages/dashboard/users/financials/partials/stats-cards"
+import AlertBanner from "@/components/pages/dashboard/users/financials/partials/alert-banner"
+import ReportCalendar from "@/components/pages/dashboard/users/financials/partials/report-calendar"
+import RevenueChart from "@/components/pages/dashboard/users/financials/partials/revenue-chart"
+import RecentTransactions from "@/components/pages/dashboard/users/financials/partials/recent-transactions"
+import { StatItem } from "@/components/pages/dashboard/users/financials/partials/stats-cards"
 import { formatIDR } from "@/lib/format-currency"
 
 export default async function FinancialsPage({ dateParam }: { dateParam?: string }) {

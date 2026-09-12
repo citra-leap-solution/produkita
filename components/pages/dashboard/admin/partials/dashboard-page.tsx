@@ -252,7 +252,7 @@ function LegendBar({
   )
 }
 
-export function SuperAdminDashboardPage() {
+export function AdminDashboardPage() {
   const [chartData] = useState([
     { month: "Jan", users: 420, tenants: 45 },
     { month: "Feb", users: 480, tenants: 52 },
@@ -270,7 +270,7 @@ export function SuperAdminDashboardPage() {
       <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-purple-600 to-indigo-600 to-blue-600 p-6 text-white">
         <div className="space-y-2">
           <p className="text-white/80 text-sm font-medium">Selamat datang kembali 👋</p>
-          <h2 className="text-2xl font-bold">Super Admin Dashboard</h2>
+          <h2 className="text-2xl font-bold">Admin Dashboard</h2>
           <p className="text-white/80 text-sm">Pantau dan kelola seluruh aktivitas barcode UMKM</p>
         </div>
       </div>

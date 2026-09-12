@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import type { ProductFormData } from "@/components/pages/dashboard/products/register/partials/product-form";
-import type { NutritionFormData } from "@/components/pages/dashboard/products/register/partials/nutritions-form";
-import type { ServingFormData } from "@/components/pages/dashboard/products/register/partials/serving-form";
-import type { LegalityFormData } from "@/components/pages/dashboard/products/register/partials/legality-form";
+import type { ProductFormData } from "@/components/pages/dashboard/users/products/register/partials/product-form";
+import type { NutritionFormData } from "@/components/pages/dashboard/users/products/register/partials/nutritions-form";
+import type { ServingFormData } from "@/components/pages/dashboard/users/products/register/partials/serving-form";
+import type { LegalityFormData } from "@/components/pages/dashboard/users/products/register/partials/legality-form";
 
 interface RegistrySubmitPayload {
   productData: ProductFormData & { productPhotoBase64?: string };

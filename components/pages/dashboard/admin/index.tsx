@@ -1,9 +1,9 @@
 "use client"
 
 import { useState } from "react"
-import { SuperAdminDashboardPage } from "@/components/pages/super-admin/partials/dashboard-page"
-import { UserManagement } from "@/components/pages/super-admin/user-management"
-import { PackagePermission } from "@/components/pages/super-admin/packages"
+import { AdminDashboardPage } from "@/components/pages/dashboard/admin/partials/dashboard-page"
+import { UserManagement } from "@/components/pages/dashboard/admin/user-management"
+import { PackagePermission } from "@/components/pages/dashboard/admin/packages"
 import { Button } from "@/components/ui/button"
 import {
   LayoutDashboard,
@@ -23,10 +23,14 @@ const menuItems = [
   { id: "packages", label: "Permission", icon: Package },
 ]
 
-export function SuperAdminPage() {
+export function AdminPage() {
   const [activeSection, setActiveSection] = useState("dashboard")
-  const { logout } = useAuth()
+  const { logout, name, email, role } = useAuth()
   const router = useRouter()
+
+  const displayName = name || email?.split("@")[0] || "Admin"
+  const initial = displayName.charAt(0).toUpperCase()
+  const displayRole = role === "superadmin" ? "Super Admin" : "Admin"
 
   const handleLogout = async () => {
     await logout()
@@ -37,13 +41,13 @@ export function SuperAdminPage() {
   const renderContent = () => {
     switch (activeSection) {
       case "dashboard":
-        return <SuperAdminDashboardPage />
+        return <AdminDashboardPage />
       case "users":
         return <UserManagement />
       case "packages":
         return <PackagePermission />
       default:
-        return <SuperAdminDashboardPage />
+        return <AdminDashboardPage />
     }
   }
 
@@ -117,11 +121,11 @@ export function SuperAdminPage() {
             <div className="h-6 w-px bg-slate-200" />
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white text-sm font-bold">
-                SA
+                {initial}
               </div>
               <div>
-                <p className="text-sm font-semibold text-slate-900">Super Admin</p>
-                <p className="text-xs text-slate-400">Super Admin</p>
+                <p className="text-sm font-semibold text-slate-900">{displayName}</p>
+                <p className="text-xs text-slate-400">{displayRole}</p>
               </div>
             </div>
           </div>

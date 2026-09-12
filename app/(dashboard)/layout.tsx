@@ -1,20 +1,25 @@
 "use client"
 
-import { useAuthStore } from "@/stores/useAuthStore"
 import { DashboardHeader, DashboardSidebar } from "@/components/navigations"
-import { SuperAdminPage } from "@/components/pages/super-admin"
+import { AdminPage } from "@/components/pages/dashboard/admin"
+import { useAuth } from "@/hooks/useAuth"
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const { role } = useAuthStore()
+  const { isAdmin, isUser, sessionReady } = useAuth()
 
-  // ponytail: global layout for all users, superadmin-specific layout handled in component
-  if (role === "superadmin") {
+  if (!sessionReady) {
+    return <div className="h-screen bg-slate-50" />
+  }
+
+  if (isAdmin) {
     return (
       <div className="flex h-screen bg-slate-50">
-        <SuperAdminPage />
+        <AdminPage />
       </div>
     )
   }
+
+  if (!isUser) return null
 
   return (
     <div className="flex h-screen bg-slate-50">

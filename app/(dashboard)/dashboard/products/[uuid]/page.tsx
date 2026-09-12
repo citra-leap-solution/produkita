@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import { ProductDetailPage } from "@/components/pages/dashboard/products/detail";
+import { ProductDetailPage } from "@/components/pages/dashboard/users/products/detail";
 
 export const metadata: Metadata = {
   title: "Detail Produk | Dashboard",

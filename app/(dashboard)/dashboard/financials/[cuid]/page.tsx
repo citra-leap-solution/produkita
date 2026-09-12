@@ -1,4 +1,4 @@
-import { TransactionForm } from "@/components/pages/dashboard/financials/partials/transaction-form"
+import { TransactionForm } from "@/components/pages/dashboard/users/financials/partials/transaction-form"
 import { getAuthCookie } from "@/lib/auth/token"
 import { getFinanceApi } from "@/lib/finance/api"
 import { redirect } from "next/navigation"
