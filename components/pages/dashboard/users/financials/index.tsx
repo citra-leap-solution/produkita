@@ -13,6 +13,17 @@ import RecentTransactions from "@/components/pages/dashboard/users/financials/pa
 import { StatItem } from "@/components/pages/dashboard/users/financials/partials/stats-cards"
 import { formatIDR } from "@/lib/format-currency"
 
+function FinancialsError({ title, message }: { title: string; message: string }) {
+  return (
+    <main className="min-h-screen bg-slate-50/50 p-6">
+      <div className="rounded-2xl border border-amber-200 bg-amber-50 p-6">
+        <h1 className="text-lg font-bold text-slate-900">{title}</h1>
+        <p className="mt-2 text-sm text-slate-600">{message}</p>
+      </div>
+    </main>
+  )
+}
+
 export default async function FinancialsPage({ dateParam }: { dateParam?: string }) {
   const token = await getAuthCookie()
   if (!token) redirect("/login")
@@ -30,10 +41,24 @@ export default async function FinancialsPage({ dateParam }: { dateParam?: string
     getTenantApi(token),
   ])
 
-  if (!dashboardRes.success || !dashboardRes.data) redirect("/login")
+  if (!dashboardRes.success || !dashboardRes.data) {
+    return (
+      <FinancialsError
+        title="Manajemen Keuangan tidak tersedia"
+        message={dashboardRes.error ?? "Data keuangan belum dapat dimuat. Silakan coba kembali."}
+      />
+    )
+  }
   const { summary, prevSummary, chartData, transactionDates, records } = dashboardRes.data
 
-  if (!tenantRes.success || !tenantRes.data) redirect("/login")
+  if (!tenantRes.success || !tenantRes.data) {
+    return (
+      <FinancialsError
+        title="Profil UMKM tidak tersedia"
+        message={tenantRes.error ?? "Profil UMKM belum dapat dimuat. Silakan coba kembali."}
+      />
+    )
+  }
   const tenant = tenantRes.data
 
   const getChange = (curr: number, prev: number) => {

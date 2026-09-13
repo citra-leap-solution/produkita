@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   LayoutDashboard,
   Package,
@@ -13,10 +13,17 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
+import { usePermission } from "@/hooks/usePermission";
+import type { AdminPermissionFeatureKey } from "@/lib/admin/api";
 import { useRouter } from "next/navigation";
 import { Logo } from "@/components/ui/logo";
 
-const menuItems = [
+const menuItems: {
+  title: string;
+  href: string;
+  icon: React.ElementType;
+  featureKey?: AdminPermissionFeatureKey;
+}[] = [
   {
     title: "Dashboard",
     href: "/dashboard",
@@ -26,16 +33,19 @@ const menuItems = [
     title: "Produk UMKM",
     href: "/dashboard/products",
     icon: Package,
+    featureKey: "max_products",
   },
   {
     title: "Manajemen Keuangan",
     href: "/dashboard/financials",
     icon: TrendingUp,
+    featureKey: "finance_access",
   },
   {
     title: "Kalkulator HPP",
     href: "/dashboard/calculators",
     icon: Calculator,
+    featureKey: "hpp_calculations_monthly",
   },
   {
     title: "Informasi UMKM",
@@ -48,18 +58,38 @@ export const Sidebar = () => {
   const pathname = usePathname();
   const router = useRouter();
   const { logout } = useAuth();
+  const { getMyPermissions } = usePermission();
   const [isOpen, setIsOpen] = useState(true);
+  const [allowedFeatures, setAllowedFeatures] =
+    useState<Set<AdminPermissionFeatureKey> | null>(null);
+
+  useEffect(() => {
+    let active = true;
+    void getMyPermissions().then((result) => {
+      if (!active || !result) return;
+      setAllowedFeatures(
+        new Set(
+          result.permissions
+            .filter((permission) => permission.is_access)
+            .map((permission) => permission.feature_key),
+        ),
+      );
+    });
+    return () => {
+      active = false;
+    };
+  }, [getMyPermissions]);
 
   const isActive = (href: string) => {
-    if (href === "/dashboard") return pathname === "/dashboard"
-    return pathname === href || pathname.startsWith(href + "/")
-  }
+    if (href === "/dashboard") return pathname === "/dashboard";
+    return pathname === href || pathname.startsWith(href + "/");
+  };
 
   const handleLogout = async () => {
-    await logout()
-    toast.success("Berhasil keluar", { description: "Sampai jumpa kembali." })
-    router.push("/login")
-  }
+    await logout();
+    toast.success("Berhasil keluar", { description: "Sampai jumpa kembali." });
+    router.push("/login");
+  };
 
   return (
     <aside
@@ -80,26 +110,30 @@ export const Sidebar = () => {
 
       {/* Nav */}
       <nav className={`flex-1 space-y-1 ${isOpen ? "px-4 py-6" : "px-2 py-6"}`}>
-        {menuItems.map((item) => {
-          const Icon = item.icon
-          const active = isActive(item.href)
-
-          return (
-            <Link key={item.title} href={item.href}>
-              <button
-                className={`flex w-full items-center gap-3 rounded-lg px-4 py-3 transition-colors ${
-                  active
-                    ? "bg-blue-50 font-medium text-blue-600"
-                    : "text-slate-600 hover:bg-slate-50"
-                }`}
-                title={!isOpen ? item.title : ""}
-              >
-                <Icon size={20} className="shrink-0" />
-                {isOpen && <span className="text-sm">{item.title}</span>}
-              </button>
-            </Link>
+        {menuItems
+          .filter(
+            (item) => !item.featureKey || allowedFeatures?.has(item.featureKey),
           )
-        })}
+          .map((item) => {
+            const Icon = item.icon;
+            const active = isActive(item.href);
+
+            return (
+              <Link key={item.title} href={item.href}>
+                <button
+                  className={`flex w-full items-center gap-3 rounded-lg px-4 py-3 transition-colors ${
+                    active
+                      ? "bg-blue-50 font-medium text-blue-600"
+                      : "text-slate-600 hover:bg-slate-50"
+                  }`}
+                  title={!isOpen ? item.title : ""}
+                >
+                  <Icon size={20} className="shrink-0" />
+                  {isOpen && <span className="text-sm">{item.title}</span>}
+                </button>
+              </Link>
+            );
+          })}
       </nav>
 
       {/* Logout */}

@@ -9,6 +9,7 @@ import type {
   AdminPermissionUpdate,
   AdminTenantPackage,
 } from "@/lib/admin/api";
+import type { MyPermissionData } from "@/lib/permission/api";
 
 type ApiResult<T> = { ok: true; data: T } | { ok: false; error: string };
 
@@ -91,6 +92,11 @@ export function usePermission() {
     [execute],
   );
 
+  const getMyPermissions = useCallback(
+    () => execute(() => apiCall<MyPermissionData>("/api/permissions/me")),
+    [execute],
+  );
+
   const savePermissions = useCallback(
     (updates: PermissionUpdateItem[]) =>
       execute<AdminPermissionItem[]>(async () => {
@@ -135,5 +141,12 @@ export function usePermission() {
     [execute],
   );
 
-  return { loading, error, getConfiguration, savePermissions, savePrices };
+  return {
+    loading,
+    error,
+    getConfiguration,
+    getMyPermissions,
+    savePermissions,
+    savePrices,
+  };
 }
