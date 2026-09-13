@@ -58,6 +58,14 @@ export type AdminTenantListItem = {
   status: string
 }
 
+export type AdminTenantPackage = "gratis" | "umkm" | "bisnis"
+export type AdminTenantStatus = "active" | "pending" | "inactive"
+
+export type AdminTenantUpdate = {
+  package?: AdminTenantPackage
+  status?: AdminTenantStatus
+}
+
 export type AdminTenantDetail = {
   uuid: string
   name: string | null
@@ -92,13 +100,19 @@ const BACKEND_API_URL = process.env.BACKEND_API_URL!
 const BACKEND_API_KEY = process.env.BACKEND_API_KEY!
 const API_VERSION = "v1"
 
-async function callAdminApi<T>(path: string, token: string): Promise<AdminApiResponse<T>> {
+async function callAdminApi<T>(
+  path: string,
+  token: string,
+  options: { method?: "GET" | "PATCH"; body?: unknown } = {}
+): Promise<AdminApiResponse<T>> {
   const response = await fetch(`${BACKEND_API_URL}/${API_VERSION}/admin${path}`, {
-    method: "GET",
+    method: options.method ?? "GET",
     headers: {
       "X-Api-Key": BACKEND_API_KEY,
       Authorization: `Bearer ${token}`,
+      ...(options.body === undefined ? {} : { "Content-Type": "application/json" }),
     },
+    body: options.body === undefined ? undefined : JSON.stringify(options.body),
     cache: "no-store",
   })
 
@@ -124,6 +138,12 @@ export const getAdminTenantsApi = (token: string) =>
 
 export const getAdminTenantDetailApi = (token: string, uuid: string) =>
   callAdminApi<AdminTenantDetail>(`/users/${encodeURIComponent(uuid)}`, token)
+
+export const updateAdminTenantApi = (token: string, uuid: string, data: AdminTenantUpdate) =>
+  callAdminApi<AdminTenantListItem>(`/users/${encodeURIComponent(uuid)}`, token, {
+    method: "PATCH",
+    body: data,
+  })
 
 export const getAdminTenantProductsApi = (token: string, uuid: string) =>
   callAdminApi<AdminProductListItem[]>(`/users/${encodeURIComponent(uuid)}/products`, token)

@@ -1,9 +1,16 @@
 "use client"
 
+import { useState } from "react"
 import { Eye, Users } from "lucide-react"
 import { Card } from "@/components/ui/card"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import type { AdminTenantListItem } from "@/lib/admin/api"
+import type {
+  AdminTenantListItem,
+  AdminTenantPackage,
+  AdminTenantStatus,
+  AdminTenantUpdate,
+} from "@/lib/admin/api"
 
 function statusStyle(status: string) {
   if (status === "UMKM Aktif") return "border-emerald-200 bg-emerald-50 text-emerald-600"
@@ -11,13 +18,44 @@ function statusStyle(status: string) {
   return "border-red-200 bg-red-50 text-red-600"
 }
 
+const PACKAGE_OPTIONS: { value: AdminTenantPackage; label: string }[] = [
+  { value: "gratis", label: "Gratis" },
+  { value: "umkm", label: "UMKM" },
+  { value: "bisnis", label: "Bisnis" },
+]
+
+const STATUS_OPTIONS: { value: AdminTenantStatus; label: string }[] = [
+  { value: "active", label: "UMKM Aktif" },
+  { value: "pending", label: "UMKM Pending" },
+  { value: "inactive", label: "UMKM Non Aktif" },
+]
+
+function packageValue(label: string): AdminTenantPackage {
+  return PACKAGE_OPTIONS.find((option) => option.label === label)?.value ?? "gratis"
+}
+
+function statusValue(label: string): AdminTenantStatus {
+  return STATUS_OPTIONS.find((option) => option.label === label)?.value ?? "inactive"
+}
+
 export function UserTable({
   users,
   onDetail,
+  onUpdate,
 }: {
   users: AdminTenantListItem[]
   onDetail: (user: AdminTenantListItem) => void
+  onUpdate: (uuid: string, data: AdminTenantUpdate) => Promise<boolean>
 }) {
+  const [updating, setUpdating] = useState<string | null>(null)
+
+  const update = async (user: AdminTenantListItem, field: "package" | "status", value: string) => {
+    const key = `${user.uuid}:${field}`
+    setUpdating(key)
+    await onUpdate(user.uuid, { [field]: value } as AdminTenantUpdate)
+    setUpdating((current) => current === key ? null : current)
+  }
+
   return (
     <Card className="gap-0 rounded-2xl border-slate-200 p-6 shadow-none">
       <div className="flex items-center justify-between border-b border-slate-200 pb-5">
@@ -50,14 +88,36 @@ export function UserTable({
               <TableCell className="py-4 text-sm font-medium text-slate-900">{user.name}</TableCell>
               <TableCell className="py-4 text-sm text-slate-900">{user.products_count}</TableCell>
               <TableCell className="py-4">
-                <span className="inline-flex rounded-full border border-violet-200 bg-violet-50 px-3 py-1 text-xs font-semibold text-violet-600">
-                  {user.package}
-                </span>
+                <Select
+                  value={packageValue(user.package)}
+                  disabled={updating === `${user.uuid}:package`}
+                  onValueChange={(value) => void update(user, "package", value)}
+                >
+                  <SelectTrigger className="h-9 w-44 border-slate-200 bg-white px-3 text-sm text-slate-900">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {PACKAGE_OPTIONS.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </TableCell>
               <TableCell className="py-4">
-                <span className={`inline-flex rounded-full border px-3 py-1 text-xs font-semibold ${statusStyle(user.status)}`}>
-                  {user.status}
-                </span>
+                <Select
+                  value={statusValue(user.status)}
+                  disabled={updating === `${user.uuid}:status`}
+                  onValueChange={(value) => void update(user, "status", value)}
+                >
+                  <SelectTrigger className={`h-9 w-44 px-3 text-sm font-medium ${statusStyle(user.status)}`}>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {STATUS_OPTIONS.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </TableCell>
               <TableCell className="py-4">
                 <button

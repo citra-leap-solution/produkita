@@ -8,12 +8,20 @@ import type {
   AdminStatistics,
   AdminTenantDetail,
   AdminTenantListItem,
+  AdminTenantUpdate,
 } from "@/lib/admin/api"
 
 type ApiResult<T> = { ok: true; data: T } | { ok: false; error: string }
 
-async function apiCall<T>(path: string): Promise<ApiResult<T>> {
-  const response = await fetch(path)
+async function apiCall<T>(
+  path: string,
+  options: { method?: "GET" | "PATCH"; body?: unknown } = {}
+): Promise<ApiResult<T>> {
+  const response = await fetch(path, {
+    method: options.method ?? "GET",
+    headers: options.body === undefined ? undefined : { "Content-Type": "application/json" },
+    body: options.body === undefined ? undefined : JSON.stringify(options.body),
+  })
   const payload = await response.json().catch(() => ({}))
   if (!response.ok || !payload.ok) {
     return { ok: false, error: payload.error ?? "Terjadi kesalahan" }
@@ -102,5 +110,16 @@ export function useAdmin() {
     [execute]
   )
 
-  return { loading, error, getDashboard, getTenants, getTenantDetail }
+  const updateTenant = useCallback(
+    (uuid: string, data: AdminTenantUpdate) =>
+      execute(() =>
+        apiCall<AdminTenantListItem>(`/api/admin/users/${encodeURIComponent(uuid)}`, {
+          method: "PATCH",
+          body: data,
+        })
+      ),
+    [execute]
+  )
+
+  return { loading, error, getDashboard, getTenants, getTenantDetail, updateTenant }
 }

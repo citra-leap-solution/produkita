@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { Eye, EyeOff } from 'lucide-react'
 import { toast } from 'sonner'
@@ -10,7 +10,6 @@ import { Logo } from '@/components/ui/logo'
 import { useAuth } from '@/hooks/useAuth'
 
 export default function LoginForm() {
-  const router = useRouter()
   const searchParams = useSearchParams()
   const { login, loading, error } = useAuth()
 
@@ -31,7 +30,7 @@ export default function LoginForm() {
       toast.success('Berhasil masuk', { description: 'Selamat datang kembali.' })
       const redirect = searchParams.get('redirect')
       const destination = redirect?.startsWith('/dashboard') ? redirect : '/dashboard'
-      router.push(destination)
+      window.location.replace(destination)
     }
   }
 

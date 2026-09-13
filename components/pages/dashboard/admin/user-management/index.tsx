@@ -1,15 +1,16 @@
 "use client"
 
 import { useEffect, useMemo, useState } from "react"
+import { toast } from "sonner"
 import { Card } from "@/components/ui/card"
 import { useAdmin, type AdminTenantDetailData } from "@/hooks/useAdmin"
-import type { AdminTenantListItem } from "@/lib/admin/api"
+import type { AdminTenantListItem, AdminTenantUpdate } from "@/lib/admin/api"
 import { UserDetailPage } from "./partials/detail"
 import { UserSearchBar } from "./partials/user-search-bar"
 import { UserTable } from "./partials/user-table"
 
 export function UserManagement() {
-  const { getTenants, getTenantDetail, loading, error } = useAdmin()
+  const { getTenants, getTenantDetail, updateTenant, loading, error } = useAdmin()
   const [users, setUsers] = useState<AdminTenantListItem[]>([])
   const [search, setSearch] = useState("")
   const [selectedUser, setSelectedUser] = useState<AdminTenantListItem | null>(null)
@@ -45,6 +46,18 @@ export function UserManagement() {
     setDetail(null)
   }
 
+  const handleUpdateTenant = async (uuid: string, data: AdminTenantUpdate) => {
+    const updated = await updateTenant(uuid, data)
+    if (!updated) {
+      toast.error("Gagal memperbarui UMKM")
+      return false
+    }
+
+    setUsers((current) => current.map((user) => user.uuid === uuid ? updated : user))
+    toast.success("Data UMKM berhasil diperbarui")
+    return true
+  }
+
   if (selectedUser) {
     if (!detail) {
       return (
@@ -67,7 +80,7 @@ export function UserManagement() {
       ) : loading && users.length === 0 ? (
         <Card className="rounded-2xl border-slate-200 p-8 text-center text-slate-500 shadow-none">Memuat daftar UMKM...</Card>
       ) : (
-        <UserTable users={filteredUsers} onDetail={openDetail} />
+        <UserTable users={filteredUsers} onDetail={openDetail} onUpdate={handleUpdateTenant} />
       )}
     </div>
   )
