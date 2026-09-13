@@ -26,7 +26,7 @@ export default function LoginForm() {
   const handleSubmit = async (e: React.SubmitEvent) => {
     e.preventDefault()
 
-    const result = await login(email, password)
+    const result = await login(email, password, rememberMe)
     if (result) {
       toast.success('Berhasil masuk', { description: 'Selamat datang kembali.' })
       const redirect = searchParams.get('redirect')
