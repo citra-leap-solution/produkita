@@ -66,6 +66,33 @@ export type AdminTenantUpdate = {
   status?: AdminTenantStatus
 }
 
+export type AdminPermissionFeatureKey =
+  | "max_products"
+  | "finance_access"
+  | "finance_report_period_months"
+  | "hpp_calculations_monthly"
+
+export type AdminPermissionItem = {
+  package: AdminTenantPackage
+  feature_key: AdminPermissionFeatureKey
+  max_value: number
+  is_access: boolean
+}
+
+export type AdminPermissionUpdate = {
+  max_value?: number
+  is_access?: boolean
+}
+
+export type AdminPackagePriceItem = {
+  package: AdminTenantPackage
+  monthly_price: number
+}
+
+export type AdminPackagePriceUpdate = {
+  monthly_price: number
+}
+
 export type AdminTenantDetail = {
   uuid: string
   name: string | null
@@ -103,7 +130,7 @@ const API_VERSION = "v1"
 async function callAdminApi<T>(
   path: string,
   token: string,
-  options: { method?: "GET" | "PATCH"; body?: unknown } = {}
+  options: { method?: "GET" | "PATCH" | "PUT"; body?: unknown } = {}
 ): Promise<AdminApiResponse<T>> {
   const response = await fetch(`${BACKEND_API_URL}/${API_VERSION}/admin${path}`, {
     method: options.method ?? "GET",
@@ -147,3 +174,35 @@ export const updateAdminTenantApi = (token: string, uuid: string, data: AdminTen
 
 export const getAdminTenantProductsApi = (token: string, uuid: string) =>
   callAdminApi<AdminProductListItem[]>(`/users/${encodeURIComponent(uuid)}/products`, token)
+
+export const getAdminPermissionsApi = (token: string) =>
+  callAdminApi<AdminPermissionItem[]>("/permissions", token)
+
+export const updateAdminPermissionApi = (
+  token: string,
+  pkg: AdminTenantPackage,
+  key: AdminPermissionFeatureKey,
+  data: AdminPermissionUpdate
+) =>
+  callAdminApi<AdminPermissionItem>(
+    `/permissions/${encodeURIComponent(pkg)}/${encodeURIComponent(key)}`,
+    token,
+    { method: "PUT", body: data }
+  )
+
+export const getAdminPackagePricesApi = (token: string) =>
+  callAdminApi<AdminPackagePriceItem[]>("/permissions/prices", token)
+
+export const updateAdminPackagePriceApi = (
+  token: string,
+  pkg: AdminTenantPackage,
+  data: AdminPackagePriceUpdate
+) =>
+  callAdminApi<AdminPackagePriceItem>(
+    `/permissions/prices/${encodeURIComponent(pkg)}`,
+    token,
+    {
+      method: "PUT",
+      body: data,
+    }
+  )
