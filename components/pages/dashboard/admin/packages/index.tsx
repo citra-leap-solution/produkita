@@ -220,14 +220,13 @@ export function PackagePermission() {
 
   const savePackagePrices = async () => {
     setSaving("price");
-    const updates = PACKAGES.map(({ value: pkg }) => ({
-      package: pkg,
-      data: {
-        monthly_price:
-          prices.find((item) => item.package === pkg)?.monthly_price ?? 0,
-      },
-    }));
-    const result = await savePrices(updates);
+    const payload = Object.fromEntries(
+      PACKAGES.map(({ value: pkg }) => [
+        pkg,
+        prices.find((item) => item.package === pkg)?.monthly_price ?? 0,
+      ]),
+    );
+    const result = await savePrices(payload);
     setSaving(null);
     if (!result) {
       toast.error("Gagal menyimpan harga paket");

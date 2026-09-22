@@ -89,9 +89,9 @@ export type AdminPackagePriceItem = {
   monthly_price: number
 }
 
-export type AdminPackagePriceUpdate = {
-  monthly_price: number
-}
+export type AdminPackagePricesUpdate = Partial<
+  Record<AdminTenantPackage, number>
+>
 
 export type AdminTenantDetail = {
   uuid: string
@@ -193,16 +193,11 @@ export const updateAdminPermissionApi = (
 export const getAdminPackagePricesApi = (token: string) =>
   callAdminApi<AdminPackagePriceItem[]>("/permissions/prices", token)
 
-export const updateAdminPackagePriceApi = (
+export const updateAdminPackagePricesApi = (
   token: string,
-  pkg: AdminTenantPackage,
-  data: AdminPackagePriceUpdate
+  data: AdminPackagePricesUpdate
 ) =>
-  callAdminApi<AdminPackagePriceItem>(
-    `/permissions/prices/${encodeURIComponent(pkg)}`,
-    token,
-    {
-      method: "PUT",
-      body: data,
-    }
-  )
+  callAdminApi<AdminPackagePriceItem[]>("/permissions/prices", token, {
+    method: "PUT",
+    body: data,
+  })

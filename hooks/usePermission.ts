@@ -3,7 +3,7 @@
 import { useCallback, useState } from "react";
 import type {
   AdminPackagePriceItem,
-  AdminPackagePriceUpdate,
+  AdminPackagePricesUpdate,
   AdminPermissionFeatureKey,
   AdminPermissionItem,
   AdminPermissionUpdate,
@@ -17,11 +17,6 @@ type PermissionUpdateItem = {
   package: AdminTenantPackage;
   key: AdminPermissionFeatureKey;
   data: AdminPermissionUpdate;
-};
-
-type PriceUpdateItem = {
-  package: AdminTenantPackage;
-  data: AdminPackagePriceUpdate;
 };
 
 async function apiCall<T>(
@@ -120,24 +115,14 @@ export function usePermission() {
   );
 
   const savePrices = useCallback(
-    (updates: PriceUpdateItem[]) =>
-      execute<AdminPackagePriceItem[]>(async () => {
-        const results = await Promise.all(
-          updates.map(({ package: pkg, data }) =>
-            apiCall<AdminPackagePriceItem>(
-              `/api/admin/permissions/prices/${encodeURIComponent(pkg)}`,
-              "PUT",
-              data,
-            ),
-          ),
-        );
-        const data: AdminPackagePriceItem[] = [];
-        for (const result of results) {
-          if (!result.ok) return result;
-          data.push(result.data);
-        }
-        return { ok: true, data };
-      }),
+    (data: AdminPackagePricesUpdate) =>
+      execute(() =>
+        apiCall<AdminPackagePriceItem[]>(
+          "/api/admin/permissions/prices",
+          "PUT",
+          data,
+        ),
+      ),
     [execute],
   );
 
