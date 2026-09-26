@@ -7,12 +7,23 @@ import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Logo } from '@/components/ui/logo'
 import { useAuth } from '@/hooks/useAuth'
+import { formatTime } from '@/lib/utils'
+
+const RESEND_COOLDOWN_SECONDS = 60
 
 export default function ForgotPasswordForm() {
   const { forgotPassword, loading, error } = useAuth()
 
   const [email, setEmail] = useState('')
   const [sentTo, setSentTo] = useState<string | null>(null)
+  const [timeLeft, setTimeLeft] = useState(0)
+
+  useEffect(() => {
+    if (timeLeft > 0) {
+      const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000)
+      return () => clearTimeout(timer)
+    }
+  }, [timeLeft])
 
   useEffect(() => {
     if (error) toast.error('Gagal', { description: error })
@@ -22,6 +33,7 @@ export default function ForgotPasswordForm() {
     const result = await forgotPassword(email)
     if (result) {
       setSentTo(email)
+      setTimeLeft(RESEND_COOLDOWN_SECONDS)
       toast.success('Email terkirim', { description: 'Silakan cek kotak masuk email Anda.' })
     }
   }
@@ -49,15 +61,19 @@ export default function ForgotPasswordForm() {
             <p className="text-slate-900 font-semibold mb-8 break-all">{sentTo}</p>
 
             <p className="text-sm text-slate-600">
-              Tidak menerima email?{' '}
-              <button
-                type="button"
-                onClick={sendLink}
-                disabled={loading}
-                className="text-blue-600 hover:text-blue-700 font-medium disabled:opacity-50 hover:cursor-pointer"
-              >
-                {loading ? 'Mengirim...' : 'Kirim ulang'}
-              </button>
+              Tidak menerima email? Cek juga folder spam.{' '}
+              {timeLeft === 0 ? (
+                <button
+                  type="button"
+                  onClick={sendLink}
+                  disabled={loading}
+                  className="text-blue-600 hover:text-blue-700 font-medium disabled:opacity-50 hover:cursor-pointer"
+                >
+                  {loading ? 'Mengirim...' : 'Kirim ulang'}
+                </button>
+              ) : (
+                <span className="text-slate-500">Tunggu {formatTime(timeLeft)} untuk mengirim ulang</span>
+              )}
               {' '}atau{' '}
               <button
                 type="button"
