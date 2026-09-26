@@ -4,7 +4,7 @@ import { jwtVerify } from "jose"
 const SECRET = new TextEncoder().encode(process.env.JWT_SECRET!)
 const COOKIE_NAME = process.env.COOKIE_NAME! || "bebekpalupi"
 
-const AUTH_PATHS = ["/login", "/register", "/otp"]
+const AUTH_PATHS = ["/login", "/register", "/otp", "/forgot-password"]
 const DASHBOARD_PATH = "/dashboard"
 const VALID_ROLES = ["superadmin", "admin", "user"] as const
 type UserRole = (typeof VALID_ROLES)[number]

@@ -184,6 +184,56 @@ export const useAuth = () => {
     }
   }
 
+  const handleForgotPassword = async (email: string) => {
+    setLoading(true)
+    setError(null)
+    try {
+      const result = await apiCall<{ email: string }>("/api/auth/forgot-password", "POST", { email })
+      if (!result.ok) {
+        setError(result.error)
+        return null
+      }
+      return result.data
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleResetPassword = async (token: string, newPassword: string) => {
+    setLoading(true)
+    setError(null)
+    try {
+      const result = await apiCall<{ reset: boolean }>("/api/auth/reset-password", "POST", { token, newPassword })
+      if (!result.ok) {
+        setError(result.error)
+        return null
+      }
+      return result.data
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleMagicLogin = async (token: string) => {
+    setLoading(true)
+    setError(null)
+    try {
+      const result = await apiCall<{ uuid: string; email: string; role: UserRole; name: string | null }>(
+        "/api/auth/magic-login",
+        "POST",
+        { token }
+      )
+      if (!result.ok) {
+        setError(result.error)
+        return null
+      }
+      setSession(result.data)
+      return result.data
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return {
     uuid,
     email,
@@ -204,5 +254,8 @@ export const useAuth = () => {
     requestUpdateEmail: handleRequestUpdateEmail,
     verifyUpdateEmail: handleVerifyUpdateEmail,
     updatePassword: handleUpdatePassword,
+    forgotPassword: handleForgotPassword,
+    resetPassword: handleResetPassword,
+    magicLogin: handleMagicLogin,
   }
 }

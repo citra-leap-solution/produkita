@@ -81,3 +81,22 @@ export const verifyUpdateEmailApi = (token: string, newEmail: string, otp: strin
 export const updatePasswordApi = (token: string, oldPassword: string, newPassword: string) => {
   return callAuthApiWithToken("/password", token, "PUT", { old_password: oldPassword, new_password: newPassword })
 }
+
+export const forgotPasswordApi = (email: string) => {
+  return callAuthApi<{ email: string }>("/forgot-password", { email })
+}
+
+export const verifyResetTokenApi = (token: string) => {
+  return callAuthApi<{ email: string }>("/reset-password/verify", { token })
+}
+
+export const resetPasswordApi = (token: string, newPassword: string) => {
+  return callAuthApi<{ reset: boolean }>("/reset-password", { token, new_password: newPassword })
+}
+
+export const magicLoginApi = (token: string) => {
+  return callAuthApi<{
+    token: string
+    user: { uuid: string; email: string; role: string; name: string | null }
+  }>("/magic-login", { token })
+}
