@@ -98,7 +98,7 @@ export function ServingForm({
 
     selectedFiles.forEach((f) => {
       if (
-        f.size > 2 * 1024 * 1024 ||
+        f.size > 5 * 1024 * 1024 ||
         !["image/jpeg", "image/png", "image/webp"].includes(f.type)
       ) {
         hasError = true;
@@ -109,7 +109,7 @@ export function ServingForm({
 
     if (hasError) {
       alert(
-        "Beberapa foto gagal diupload. Pastikan formatnya JPG/PNG/WEBP dan ukuran maksimal 2MB.",
+        "Beberapa foto gagal diupload. Pastikan formatnya JPG/PNG/WEBP dan ukuran maksimal 5MB.",
       );
     }
 
@@ -160,7 +160,7 @@ export function ServingForm({
     const file = e.target.files?.[0];
     e.target.value = "";
     if (disabled || !file || replaceSlotIndex === null) return;
-    if (file.size > 2 * 1024 * 1024) return;
+    if (file.size > 5 * 1024 * 1024) return;
     if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) return;
 
     const reader = new FileReader();
@@ -343,7 +343,7 @@ export function ServingForm({
                       Klik atau seret foto ke sini
                     </p>
                     <p className="mt-0.5 text-xs text-gray-400">
-                      PNG, JPG, WEBP &bull; Maks. 2MB
+                      PNG, JPG, WEBP &bull; Maks. 5MB
                     </p>
                   </>
                 )}

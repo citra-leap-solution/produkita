@@ -189,13 +189,6 @@ export default function TenantsPage() {
         ) : (
           <div className="w-full h-full bg-linear-to-r from-blue-800 to-blue-600" />
         )}
-        <button
-          onClick={() => {}}
-          className="absolute top-3 right-3 z-10 flex items-center gap-1.5 bg-black/50 text-white text-xs font-medium px-3 py-1.5 rounded-lg hover:bg-black/60 transition-colors"
-        >
-          <Camera size={13} />
-          Ganti Foto Tempat
-        </button>
         <div className="absolute bottom-4 left-5 z-10 flex items-center gap-3">
           <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-md shrink-0 overflow-hidden">
             {logoUrl ? (
@@ -319,7 +312,7 @@ export default function TenantsPage() {
               setPendingPlace(file)
               setPlacePreview(preview)
             }}
-            isEditing={isEditing} 
+            isEditing={isEditing}
           />
         </div>
       </div>

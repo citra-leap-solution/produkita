@@ -93,7 +93,7 @@ export function ProductInfoForm({
     const incoming = Array.from(files).slice(0, allowed)
 
     const validFiles = incoming.filter((f) => {
-      if (f.size > 2 * 1024 * 1024) return false
+      if (f.size > 5 * 1024 * 1024) return false
       if (!["image/jpeg", "image/png", "image/webp"].includes(f.type)) return false
       return true
     })
@@ -151,7 +151,7 @@ export function ProductInfoForm({
     const file = e.target.files?.[0]
     e.target.value = ""
     if (disabled || !file || replaceSlotIndex === null) return
-    if (file.size > 2 * 1024 * 1024) return
+    if (file.size > 5 * 1024 * 1024) return
     if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) return
 
     const reader = new FileReader()
@@ -363,7 +363,7 @@ export function ProductInfoForm({
                   </div>
                   <p className="text-sm font-semibold text-gray-800">Upload Foto Produk</p>
                   <p className="mt-0.5 text-xs text-gray-500">Klik atau seret foto ke sini</p>
-                  <p className="mt-0.5 text-xs text-gray-400">PNG, JPG, WEBP • Maks. 2MB</p>
+                  <p className="mt-0.5 text-xs text-gray-400">PNG, JPG, WEBP • Maks. 5MB</p>
                 </>
               )}
             </div>

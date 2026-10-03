@@ -6,13 +6,13 @@ import { RecentActivities } from "./partials/recent-activities";
 
 export function DashboardPage() {
   return (
-    <div className="flex flex-col gap-6 w-full pb-10">
+    <div className="flex flex-col gap-6 w-full p-6 pb-10">
       {/* Top Stats Cards */}
       <section>
         <OverviewStats />
       </section>
 
-      {/* Middle Section*/}
+      {/* Middle Section */}
       <section className="grid grid-cols-1 xl:grid-cols-12 gap-6">
         <div className="xl:col-span-8">
           <RevenueChart />

@@ -17,9 +17,15 @@ export const Cta = () => {
           </div>
 
           <div className="shrink-0">
-            <Button className="bg-white text-blue-600 hover:bg-slate-50 font-bold py-6 px-8 rounded-xl shadow-lg hover:shadow-xl transition-all flex items-center gap-2">
-              Hubungi Kami
-              <ArrowRight className="h-5 w-5" />
+            <Button asChild className="bg-white text-blue-600 hover:bg-slate-50 font-bold py-6 px-8 rounded-xl shadow-lg hover:shadow-xl transition-all flex items-center gap-2">
+              <a
+                href="https://wa.me/6285257325537"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Hubungi Kami
+                <ArrowRight className="h-5 w-5" />
+              </a>
             </Button>
           </div>
         </div>
